@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card p-4">
+  <h4>Job #{{ job.id }} — {{ job.report_date }}</h4>
+  <p class="text-muted mb-1">
+    License type filter: {% if job.filter_private %}Private only{% else %}All license types{% endif %}
+  </p>
+  <p>Status: <span id="status-badge" class="badge status-badge
+      {% if job.status == 'done' %}bg-success
+      {% elif job.status == 'failed' %}bg-danger
+      {% elif job.status == 'processing' %}bg-warning text-dark
+      {% else %}bg-secondary{% endif %}">{{ job.get_status_display }}</span></p>
+
+  <div id="progress-area">
+    {% if job.status == 'queued' or job.status == 'processing' %}
+      <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+      Running matching / enrichment / SQL Server sync — this page refreshes automatically.
+    {% endif %}
+  </div>
+
+  <div id="error-area">
+    {% if job.error_message %}
+      <pre class="bg-light p-3 mt-3 small text-danger">{{ job.error_message }}</pre>
+    {% endif %}
+  </div>
+
+  <div id="result-area">
+    {% if job.status == 'done' %}
+      <p class="mt-3">Rows processed: {{ job.row_count|default:"—" }} · Rows persisted to Fact_Vehicles: {{ job.filtered_row_count|default:"—" }}</p>
+      <a class="btn btn-success me-2" href="{{ job.output_file.url }}">Download full output</a>
+      <a class="btn btn-outline-secondary" href="{{ job.filtered_file.url }}">Download filtered file</a>
+    {% endif %}
+  </div>
+
+  <a class="mt-4 d-inline-block" href="{% url 'job_list' %}">&larr; Back to jobs</a>
+</div>
+
+<script>
+const jobId = {{ job.id }};
+const terminal = new Set(["done", "failed"]);
+let currentStatus = "{{ job.status }}";
+
+if (!terminal.has(currentStatus)) {
+  const poll = setInterval(async () => {
+    const res = await fetch(`/jobs/${jobId}/status/`);
+    const data = await res.json();
+    if (data.status !== currentStatus) {
+      // status changed - reload the page to render the final template state
+      window.location.reload();
+    }
+  }, 3000);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="card p-4">
+      <h4 class="mb-3">Upload monthly Excel report</h4>
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">{{ form.uploaded_file.label }}</label>
+          {{ form.uploaded_file }}
+          {% if form.uploaded_file.errors %}
+          <div class="text-danger small">{{ form.uploaded_file.errors }}</div>
+          {% endif %}
+        </div>
+        <div class="mb-3">
+          <label class="form-label">{{ form.report_date.label }}</label>
+          {{ form.report_date }}
+          {% if form.report_date.errors %}
+          <div class="text-danger small">{{ form.report_date.errors }}</div>
+          {% endif %}
+        </div>
+        <div class="mb-3 form-check">
+          {{ form.filter_private }}
+          <label class="form-check-label" for="{{ form.filter_private.id_for_label }}">
+            {{ form.filter_private.label }}
+          </label>
+          <div class="form-text">Unchecked = keep all license types (Private, Commercial, Taxi, etc.) in the filtered
+            output and SQL Server push.</div>
+        </div>
+        <button type="submit" class="btn btn-primary">Run pipeline</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

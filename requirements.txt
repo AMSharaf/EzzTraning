@@ -1,0 +1,23 @@
+# --- Web app (Django) ---
+Django>=5.0,<6.0
+
+# --- Excel handling (pipeline/services.py, modules/excel_*.py) ---
+openpyxl>=3.1
+pandas>=2.0
+
+SQLAlchemy>=2.0
+pyodbc>=5.0
+# NOTE: pyodbc also needs the "ODBC Driver 17 for SQL Server" installed
+# at the OS level (not a pip package). See setup notes below.
+
+rapidfuzz>=3.0
+
+google-genai>=0.3.0
+
+# --- Loads GEMINI_API_KEY / SQL_SERVER etc. from .env (config.py) ---
+python-dotenv>=1.0
+
+# --- Production-grade background jobs (optional, see README "Going to
+#     production" section) ---
+# celery>=5.3
+# redis>=5.0
